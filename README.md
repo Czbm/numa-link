@@ -62,7 +62,7 @@ Al montarse como unidad real mediante **WinFsp**, cualquier programa habitual �
 ### 1. Conexión intuitiva estilo Quick Share
 
 - **Descubrimiento automático (UDP):** cada PC con NUMA Link aparece automáticamente en *Equipos cercanos* según su modo de visibilidad (*Todos*, *Solo confianza* u *Oculto*).
-- **Solicitud con código de verificación:** al pulsar *Conectar*, el equipo destino muestra una ventana emergente con el nombre del equipo solicitante y un código de 4 dígitos.
+- **Solicitud instantánea:** al pulsar *Conectar*, el equipo destino muestra una ventana emergente con un código visual de verificación para confirmar el equipo; solo basta con aceptar o rechazar (sin escribir contraseñas ni códigos).
 - **Montaje automático:** al aceptar, el equipo solicitante monta la siguiente letra disponible (`Z:\`) con ícono de PC (*Este equipo*) e íconos de disco duro para cada unidad remota, y abre directamente el Explorador de Windows.
 
 <div align="center">
@@ -82,7 +82,7 @@ Al montarse como unidad real mediante **WinFsp**, cualquier programa habitual �
 <div align="center">
   <table>
     <tr>
-      <td align="center"><img src="docs/screenshots/request-dialog.jpg" alt="Diálogo de solicitud de conexión LAN" width="270" /><br /><em>Solicitud con código de 4 dígitos</em></td>
+      <td align="center"><img src="docs/screenshots/request-dialog.jpg" alt="Diálogo de solicitud de conexión LAN" width="270" /><br /><em>Solicitud de conexión (aceptar o rechazar)</em></td>
       <td align="center"><img src="docs/screenshots/request-access-levels.jpg" alt="Selector de niveles de acceso" width="270" /><br /><em>Niveles de acceso</em></td>
       <td align="center"><img src="docs/screenshots/request-permissions.jpg" alt="Selector de permisos" width="270" /><br /><em>Permisos de sesión</em></td>
     </tr>
