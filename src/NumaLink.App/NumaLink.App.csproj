@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationIcon>Assets\numa-link.ico</ApplicationIcon>
+    <AssemblyName>NumaLink</AssemblyName>
+    <RootNamespace>NumaLink.App</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\numa-link.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="3.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NumaFiles.Core\NumaFiles.Core.csproj" />
+    <ProjectReference Include="..\NumaFiles.LanShare\NumaFiles.LanShare.csproj" />
+    <ProjectReference Include="..\NumaFiles.VirtualDrive\NumaFiles.VirtualDrive.csproj" />
+  </ItemGroup>
+</Project>

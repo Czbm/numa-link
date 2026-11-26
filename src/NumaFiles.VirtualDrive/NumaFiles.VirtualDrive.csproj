@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WinFsp.Net" Version="2.2.26323" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NumaFiles.Core\NumaFiles.Core.csproj" />
+    <ProjectReference Include="..\NumaFiles.LanShare\NumaFiles.LanShare.csproj" />
+  </ItemGroup>
+</Project>

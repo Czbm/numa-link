@@ -1,0 +1,139 @@
+<ui:FluentWindow x:Class="NumaLink.App.LinkRequestWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 Title="Solicitud de conexión — Numa Link"
+                 Icon="Assets/numa-link.ico"
+                 Width="480"
+                 SizeToContent="Height"
+                 ResizeMode="NoResize"
+                 WindowStartupLocation="CenterScreen"
+                 Topmost="True"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="None"
+                 Background="{DynamicResource LinkBgBrush}"
+                 Foreground="{DynamicResource LinkTextPrimaryBrush}"
+                 FontFamily="{StaticResource LinkUiFont}">
+
+    <Border Background="{DynamicResource LinkBgBrush}" Padding="22,18,22,22">
+        <StackPanel>
+            <Border Background="{StaticResource LinkElevatedBrush}"
+                    BorderBrush="{StaticResource LinkWarmBrush}"
+                    BorderThickness="1.5"
+                    CornerRadius="12"
+                    Padding="10,4"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,0,14">
+                <TextBlock Text="SOLICITUD DE CONEXIÓN LAN"
+                           FontSize="11"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource LinkWarmBrush}" />
+            </Border>
+
+            <Border Background="{StaticResource LinkSurfaceBrush}"
+                    BorderBrush="{StaticResource LinkBorderBrush}"
+                    BorderThickness="1.5"
+                    CornerRadius="14"
+                    Padding="16"
+                    Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock x:Name="DeviceNameText"
+                                   FontFamily="{StaticResource LinkBrandFont}"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource LinkTextPrimaryBrush}" />
+                        <TextBlock x:Name="DeviceSubtitleText"
+                                   FontSize="12"
+                                   Margin="0,3,0,0"
+                                   Foreground="{StaticResource LinkTextSecondaryBrush}" />
+                    </StackPanel>
+                    <Border Grid.Column="1"
+                            Background="{StaticResource LinkBgBrush}"
+                            BorderBrush="{StaticResource LinkPrimaryBrush}"
+                            BorderThickness="1.5"
+                            CornerRadius="10"
+                            Padding="14,8"
+                            Margin="12,0,0,0">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="CÓDIGO" FontSize="9.5" FontWeight="Bold"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{StaticResource LinkTextSecondaryBrush}" />
+                            <TextBlock x:Name="CodeText"
+                                       FontFamily="{StaticResource LinkBrandFont}"
+                                       FontSize="22"
+                                       FontWeight="ExtraBold"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{StaticResource LinkPrimaryBrush}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <TextBlock Text="NIVEL DE ACCESO" FontSize="11" FontWeight="Bold"
+                       Foreground="{StaticResource LinkTextSecondaryBrush}" Margin="2,0,0,6" />
+            <ComboBox x:Name="AccessLevelCombo" SelectedIndex="0" FontSize="13" Margin="0,0,0,10"
+                      SelectionChanged="AccessLevelCombo_SelectionChanged">
+                <ComboBoxItem Tag="Media" Content="Multimedia — Música, Videos e Imágenes" />
+                <ComboBoxItem Tag="Full" Content="Completo — Todas las unidades locales" />
+                <ComboBoxItem Tag="Custom" Content="Personalizado — Elegir carpetas específicas" />
+            </ComboBox>
+
+            <Border x:Name="CustomFoldersPanel" Visibility="Collapsed"
+                    Background="{StaticResource LinkSurfaceBrush}"
+                    BorderBrush="{StaticResource LinkBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="10" Margin="0,0,0,12">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,6">
+                        <TextBlock Text="Carpetas permitidas:" FontSize="12" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" Foreground="{StaticResource LinkTextPrimaryBrush}" />
+                        <Button Content="+ Agregar carpeta" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                                Padding="10,4" FontSize="11.5" FontWeight="SemiBold" Cursor="Hand"
+                                Background="{StaticResource LinkElevatedBrush}"
+                                Foreground="{StaticResource LinkPrimaryBrush}"
+                                BorderBrush="{StaticResource LinkBorderBrush}" BorderThickness="1"
+                                Click="AddCustomFolder_Click" />
+                    </DockPanel>
+                    <ItemsControl x:Name="CustomFoldersList" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="PERMISOS" FontSize="11" FontWeight="Bold"
+                       Foreground="{StaticResource LinkTextSecondaryBrush}" Margin="2,4,0,6" />
+            <ComboBox x:Name="PermissionCombo" SelectedIndex="0" FontSize="13" Margin="0,0,0,14">
+                <ComboBoxItem Tag="ReadOnly" Content="Solo lectura — Ver y descargar archivos" />
+                <ComboBoxItem Tag="ReadWrite" Content="Lectura y escritura — Copiar, crear y modificar" />
+            </ComboBox>
+
+            <CheckBox x:Name="RememberCheck"
+                      Content="Recordar este equipo (reconectar automáticamente)"
+                      FontSize="12.5"
+                      Margin="2,0,0,18"
+                      Foreground="{StaticResource LinkTextPrimaryBrush}" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Rechazar" HorizontalAlignment="Stretch" Height="40"
+                        FontSize="13.5" FontWeight="SemiBold" Cursor="Hand"
+                        Background="{StaticResource LinkSurfaceBrush}"
+                        Foreground="{StaticResource LinkTextPrimaryBrush}"
+                        BorderBrush="{StaticResource LinkBorderBrush}" BorderThickness="1.5"
+                        Click="Reject_Click" />
+                <Button Grid.Column="2" Content="Aceptar y compartir" HorizontalAlignment="Stretch" Height="40"
+                        FontSize="13.5" FontWeight="SemiBold" Cursor="Hand"
+                        Background="{StaticResource LinkPrimaryBrush}"
+                        Foreground="#EEF2FF"
+                        BorderBrush="{StaticResource LinkPrimaryBrush}" BorderThickness="1.5"
+                        Click="Accept_Click" />
+            </Grid>
+        </StackPanel>
+    </Border>
+</ui:FluentWindow>

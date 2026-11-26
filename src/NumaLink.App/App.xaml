@@ -1,0 +1,29 @@
+<Application x:Class="NumaLink.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             StartupUri="TrayHubWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Dark" />
+                <ui:ControlsDictionary />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Initial Dynamic Theme Tokens (updated live by LinkThemeManager) -->
+            <SolidColorBrush x:Key="LinkBgBrush" Color="#0E1324" />
+            <SolidColorBrush x:Key="LinkSurfaceBrush" Color="#141B2F" />
+            <SolidColorBrush x:Key="LinkElevatedBrush" Color="#1B2440" />
+            <SolidColorBrush x:Key="LinkBorderBrush" Color="#2A3656" />
+            <SolidColorBrush x:Key="LinkTextPrimaryBrush" Color="#EEF2FF" />
+            <SolidColorBrush x:Key="LinkTextSecondaryBrush" Color="#94A3B8" />
+            <SolidColorBrush x:Key="LinkPrimaryBrush" Color="#2563FF" />
+            <SolidColorBrush x:Key="LinkPrimaryContentBrush" Color="#EEF2FF" />
+            <SolidColorBrush x:Key="LinkSuccessBrush" Color="#2EE6C5" />
+            <SolidColorBrush x:Key="LinkWarmBrush" Color="#FFB347" />
+            <SolidColorBrush x:Key="LinkHoverBrush" Color="#1F2B4D" />
+            <FontFamily x:Key="LinkBrandFont">Cabinet Grotesk, Segoe UI Variable Display, Segoe UI</FontFamily>
+            <FontFamily x:Key="LinkUiFont">Inter, Segoe UI Variable Text, Segoe UI</FontFamily>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
