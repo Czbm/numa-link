@@ -37,6 +37,15 @@
 
 Al montarse como unidad real mediante **WinFsp**, cualquier programa habitual —el Explorador de Windows, AutoCAD, VS Code, VLC, Photoshop o el visor de fotos— puede abrir, copiar o guardar archivos del otro equipo de forma completamente transparente.
 
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="docs/screenshots/main-dark.png" alt="NUMA Link en Modo Oscuro" width="400" /><br /><em>Interfaz principal en Modo Oscuro (Azul Noche)</em></td>
+      <td align="center"><img src="docs/screenshots/main-light.png" alt="NUMA Link en Modo Claro" width="400" /><br /><em>Interfaz principal en Modo Claro</em></td>
+    </tr>
+  </table>
+</div>
+
 ---
 
 ## ¿Para qué fue pensado?
@@ -54,7 +63,13 @@ Al montarse como unidad real mediante **WinFsp**, cualquier programa habitual �
 
 - **Descubrimiento automático (UDP):** cada PC con NUMA Link aparece automáticamente en *Equipos cercanos* según su modo de visibilidad (*Todos*, *Solo confianza* u *Oculto*).
 - **Solicitud con código de verificación:** al pulsar *Conectar*, el equipo destino muestra una ventana emergente con el nombre del equipo solicitante y un código de 4 dígitos.
-- **Montaje automático:** al aceptar, el equipo solicitante monta la siguiente letra disponible (`Z:\`) y abre directamente el Explorador de Windows.
+- **Montaje automático:** al aceptar, el equipo solicitante monta la siguiente letra disponible (`Z:\`) con ícono de PC (*Este equipo*) e íconos de disco duro para cada unidad remota, y abre directamente el Explorador de Windows.
+
+<div align="center">
+  <img src="docs/screenshots/explorer-mounted-drive.png" alt="Equipo remoto montado como unidad Z: en el Explorador de Windows" width="320" />
+  <br />
+  <em>Equipo remoto montado como unidad real (<code>Z:</code>) en el Explorador de Windows con sus discos disponibles.</em>
+</div>
 
 ### 2. Tres niveles de acceso y permisos
 
@@ -63,6 +78,16 @@ Al montarse como unidad real mediante **WinFsp**, cualquier programa habitual �
 | **Multimedia** | Bibliotecas de Música, Videos e Imágenes de Windows | Solo lectura / Lectura y escritura |
 | **Completo** | Todas las unidades locales del equipo (`C:\`, `D:\`, etc.) | Solo lectura / Lectura y escritura |
 | **Personalizado** | Carpetas específicas elegidas al momento de aceptar | Solo lectura / Lectura y escritura |
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="docs/screenshots/request-dialog.jpg" alt="Diálogo de solicitud de conexión LAN" width="270" /><br /><em>Solicitud con código de 4 dígitos</em></td>
+      <td align="center"><img src="docs/screenshots/request-access-levels.jpg" alt="Selector de niveles de acceso" width="270" /><br /><em>Niveles de acceso</em></td>
+      <td align="center"><img src="docs/screenshots/request-permissions.jpg" alt="Selector de permisos" width="270" /><br /><em>Permisos de sesión</em></td>
+    </tr>
+  </table>
+</div>
 
 ---
 
