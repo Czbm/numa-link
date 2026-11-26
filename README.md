@@ -95,14 +95,23 @@ Al montarse como unidad real mediante **WinFsp**, cualquier programa habitual �
 
 Desde el botón de **Configuración** puedes personalizar la interfaz en vivo (todas las preferencias se guardan automáticamente entre sesiones):
 
-- **Quick Share (Pestañas):** ventana compacta con pestañas segmentadas (*Cercanos* / *Montadas*) y dock inferior fijo.
+- **Quick Share (Pestañas):** ventana compacta con altura dinámica y 3 pestañas segmentadas (*Cercanos* / *Montadas* / *Compartiendo*) más dock inferior fijo.
 - **Horizontal (2 columnas):** vista simultánea de equipos cercanos a la izquierda y unidades montadas a la derecha.
 - **Bento Grid:** tarjetas modulares estilo Numa con chips rápidos para unidades montadas y cuadrícula de 2 columnas.
 - **Modo Claro y Oscuro:** alternancia instantánea en la barra superior (*Numa Claro* y *Numa Azul Noche*).
 - **Bilingüe (Español / English):** cambio de idioma en vivo desde Configuración.
 - **Segundo plano (System Tray):** al cerrar con `×` queda residente en la bandeja; con *Iniciar con Windows* arranca minimizado (`--minimized`).
-- **Alias, sesiones y caché:** personaliza el nombre de tu equipo en la red, desconecta sesiones o revoca equipos de confianza y limpia la caché temporal con un clic.
+- **Control total en vivo:** desde la pestaña *Compartiendo* o el panel minimalista de *Configuración* puedes editar privilegios en caliente, cortar sesiones, revocar confianza, cambiar el alias de tu equipo y limpiar la caché temporal.
 - **Preparado para dispositivos móviles (Android / iOS):** el protocolo LAN y el montador WinFsp soportan rutas POSIX (`/`), nombres amigables de carpetas raíz (`RootDisplayNames`) e identificación automática de teléfonos (`DeviceType`) para integrarse con la app compañera móvil.
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="docs/screenshots/sharing-dark.png" alt="Pestaña Compartiendo en Modo Oscuro" width="400" /><br /><em>Pestaña Compartiendo (control de accesos locales)</em></td>
+      <td align="center"><img src="docs/screenshots/settings-system-dark.png" alt="Panel de Configuración minimalista" width="380" /><br /><em>Configuración minimalista (General · Conexiones · Sistema)</em></td>
+    </tr>
+  </table>
+</div>
 
 ---
 
