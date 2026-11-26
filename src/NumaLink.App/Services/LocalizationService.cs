@@ -16,11 +16,16 @@ public sealed class LocStrings
     public string NearbyDevices => En ? "NEARBY DEVICES" : "EQUIPOS CERCANOS";
     public string TabNearby => En ? "Nearby" : "Cercanos";
     public string TabMounted => En ? "Mounted" : "Montadas";
+    public string TabSharing => En ? "Sharing" : "Compartiendo";
     public string NoDrives => En ? "No connected drives" : "Sin unidades conectadas";
+    public string NoSharing => En ? "No devices accessing your files" : "Ningún equipo accede a tus archivos";
     public string SearchingPeers => En ? "Searching for devices on your network..." : "Buscando equipos en tu red...";
     public string Connect => En ? "Connect" : "Conectar";
     public string Open => En ? "Open" : "Abrir";
     public string Unmount => En ? "Unmount" : "Desmontar";
+    public string EditPrivileges => En ? "Privileges" : "Privilegios";
+    public string CutConnection => En ? "Cut" : "Cortar";
+    public string RevokeAccess => En ? "Revoke" : "Revocar";
     public string Close => En ? "Close" : "Cerrar";
     public string Settings => En ? "Settings" : "Configuración";
     public string ThemeTooltip => En ? "Switch Light / Dark mode" : "Cambiar modo Claro / Oscuro";

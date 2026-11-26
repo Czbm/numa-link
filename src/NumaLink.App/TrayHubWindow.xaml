@@ -197,11 +197,18 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="StatusBannerText" Grid.Column="0"
                                FontSize="14.5" TextWrapping="Wrap" VerticalAlignment="Center"
                                Foreground="{DynamicResource LinkTextPrimaryBrush}" />
-                    <Button Grid.Column="1" Content="×" FontSize="18" Padding="8,0"
+                    <TextBlock x:Name="StatusCountdownText" Grid.Column="1"
+                               Visibility="Collapsed"
+                               FontSize="11.5" FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="8,0,2,0"
+                               Foreground="{DynamicResource LinkTextSecondaryBrush}" />
+                    <Button Grid.Column="2" Content="×" FontSize="18" Padding="8,0"
                             Background="Transparent" BorderThickness="0" Cursor="Hand"
                             Foreground="{DynamicResource LinkTextSecondaryBrush}"
                             Click="DismissStatus_Click" />
@@ -222,7 +229,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- Segmented Tabs -->
+                <!-- Segmented Tabs (3 tabs: Nearby / Mounted / Sharing) -->
                 <Border Grid.Row="0"
                         Background="{DynamicResource LinkSurfaceBrush}"
                         BorderBrush="{DynamicResource LinkBorderBrush}"
@@ -233,19 +240,26 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="6" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Button x:Name="QsTabNearbyButton" Grid.Column="0"
                                 Content="Cercanos (0)"
                                 HorizontalAlignment="Stretch" Height="38"
-                                FontSize="15" FontWeight="SemiBold" Cursor="Hand" BorderThickness="0"
+                                FontSize="14" FontWeight="SemiBold" Cursor="Hand" BorderThickness="0"
                                 Click="QsTabNearby_Click" />
                         <Button x:Name="QsTabMountedButton" Grid.Column="2"
                                 Content="Montadas (0)"
                                 HorizontalAlignment="Stretch" Height="38"
-                                FontSize="15" FontWeight="SemiBold" Cursor="Hand" BorderThickness="0"
+                                FontSize="14" FontWeight="SemiBold" Cursor="Hand" BorderThickness="0"
                                 Click="QsTabMounted_Click" />
+                        <Button x:Name="QsTabSharingButton" Grid.Column="4"
+                                Content="Compartiendo (0)"
+                                HorizontalAlignment="Stretch" Height="38"
+                                FontSize="14" FontWeight="SemiBold" Cursor="Hand" BorderThickness="0"
+                                Click="QsTabSharing_Click" />
                     </Grid>
                 </Border>
 
@@ -355,6 +369,71 @@
                                                             Click="UnmountDrive_Click" />
                                                 </StackPanel>
                                             </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <!-- Sharing Tab (Devices accessing THIS PC's local files) -->
+                    <Grid x:Name="QsSharingPanel" Visibility="Collapsed">
+                        <StackPanel x:Name="QsNoSharingState" Margin="0,24,0,24" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Border Width="64" Height="64" CornerRadius="999"
+                                    Background="{DynamicResource LinkSurfaceBrush}"
+                                    BorderBrush="{DynamicResource LinkBorderBrush}" BorderThickness="1.5"
+                                    HorizontalAlignment="Center" Margin="0,0,0,12">
+                                <ui:SymbolIcon Symbol="Shield20" FontSize="28"
+                                               Foreground="{DynamicResource LinkWarmBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock x:Name="QsNoSharingText"
+                                       Text="Ningún equipo accede a tus archivos"
+                                       FontSize="15.5" FontWeight="Medium" TextAlignment="Center"
+                                       Foreground="{DynamicResource LinkTextSecondaryBrush}" />
+                        </StackPanel>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="360">
+                            <ItemsControl x:Name="QsSharingList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{DynamicResource LinkSurfaceBrush}"
+                                                BorderBrush="{DynamicResource LinkWarmBrush}"
+                                                BorderThickness="1.5" CornerRadius="14"
+                                                Padding="15,13" Margin="0,0,0,10">
+                                            <StackPanel>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel Grid.Column="0">
+                                                        <TextBlock Text="{Binding DeviceName}" FontSize="16.5" FontWeight="Bold"
+                                                                   Foreground="{DynamicResource LinkTextPrimaryBrush}" />
+                                                        <TextBlock Text="{Binding Subtitle}" FontSize="13.5" Margin="0,2,0,0"
+                                                                   Foreground="{DynamicResource LinkTextSecondaryBrush}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                    <Button Content="{Binding PrivilegesLabel}" Tag="{Binding Session}"
+                                                            Padding="12,6" Margin="0,0,8,0" FontSize="13.5" FontWeight="SemiBold" Cursor="Hand"
+                                                            Background="{DynamicResource LinkPrimaryBrush}"
+                                                            Foreground="{DynamicResource LinkPrimaryContentBrush}"
+                                                            BorderThickness="0" Click="EditIncomingPrivileges_Click" />
+                                                    <Button Content="{Binding CutLabel}" Tag="{Binding Session}"
+                                                            Padding="12,6" Margin="0,0,8,0" FontSize="13.5" FontWeight="SemiBold" Cursor="Hand"
+                                                            Background="{DynamicResource LinkElevatedBrush}"
+                                                            Foreground="{DynamicResource LinkWarmBrush}"
+                                                            BorderBrush="{DynamicResource LinkBorderBrush}" BorderThickness="1"
+                                                            Click="CutIncomingSession_Click" />
+                                                    <Button Content="{Binding RevokeLabel}" Tag="{Binding Session}"
+                                                            Padding="12,6" FontSize="13.5" FontWeight="SemiBold" Cursor="Hand"
+                                                            Background="{DynamicResource LinkElevatedBrush}"
+                                                            Foreground="{DynamicResource LinkTextPrimaryBrush}"
+                                                            BorderBrush="{DynamicResource LinkBorderBrush}" BorderThickness="1"
+                                                            Click="RevokeIncomingAccess_Click" />
+                                                </StackPanel>
+                                            </StackPanel>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

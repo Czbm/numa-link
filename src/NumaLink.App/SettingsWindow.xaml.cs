@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using NumaFiles.Core.Models;
 using NumaFiles.LanShare;
 using NumaFiles.VirtualDrive;
@@ -116,6 +117,7 @@ public partial class SettingsWindow : FluentWindow
         AboutVersionBadge.Text = $"v{ver}";
         var winfspStatus = WinFspBootstrapper.IsInstalled() ? "WinFsp OK" : "WinFsp pendiente";
         AboutTechText.Text = $"Numa · GPLv3 · TLS 1.3 · {winfspStatus}";
+        CreatedByRun.Text = _settings.Language == LinkLanguage.En ? "Created by " : "Creado por ";
 
         UpdateLanguageButtonsVisual();
         StyleTabButton(TabGeneralBtn, _activeTab == 0);
@@ -253,6 +255,16 @@ public partial class SettingsWindow : FluentWindow
     {
         CacheCleanerService.ClearCache();
         RefreshSessionsAndCache();
+    }
+
+    private void AuthorLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo { FileName = e.Uri.AbsoluteUri, UseShellExecute = true });
+        }
+        catch { }
+        e.Handled = true;
     }
 
     private async void CheckUpdates_Click(object sender, RoutedEventArgs e)

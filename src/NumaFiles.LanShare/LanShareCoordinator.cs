@@ -9,6 +9,7 @@ public interface ILanShareCoordinator : IDisposable
     VisibilityMode Visibility { get; set; }
     IReadOnlyList<LanPeer> NearbyPeers { get; }
     IReadOnlyList<LanSession> ActiveSessions { get; }
+    IReadOnlyList<LanSession> IncomingSessions { get; }
     IReadOnlyList<ConnectedRemoteEndpoint> ConnectedEndpoints { get; }
     IReadOnlyList<TrustedDeviceRecord> TrustedDevices { get; }
 
@@ -19,6 +20,7 @@ public interface ILanShareCoordinator : IDisposable
     void SetLocalDeviceName(string displayName);
     Task<PairResponsePacket> RequestConnectionAsync(LanPeer peer, string verificationCode, CancellationToken ct = default);
     Task<PairDecision> SimulateIncomingRequestAsync(string fromDisplayName, string verificationCode);
+    bool UpdateIncomingSessionPolicy(string sessionId, AccessPolicy newPolicy);
     void DisconnectSession(string sessionId);
     void RevokeTrustedDevice(string deviceId);
 }
@@ -58,6 +60,7 @@ public sealed class LanShareCoordinator : ILanShareCoordinator
 
     public IReadOnlyList<LanPeer> NearbyPeers => _discovery.GetPeers();
     public IReadOnlyList<LanSession> ActiveSessions => _pairing.GetAllSessions();
+    public IReadOnlyList<LanSession> IncomingSessions => _pairing.GetIncomingSessions();
     public IReadOnlyList<ConnectedRemoteEndpoint> ConnectedEndpoints => _pairing.GetOutgoingConnections();
     public IReadOnlyList<TrustedDeviceRecord> TrustedDevices => _identity.GetTrustedDevices();
 
@@ -95,6 +98,13 @@ public sealed class LanShareCoordinator : ILanShareCoordinator
 
     public Task<PairDecision> SimulateIncomingRequestAsync(string fromDisplayName, string verificationCode) =>
         _pairing.SimulateIncomingRequestAsync(fromDisplayName, verificationCode);
+
+    public bool UpdateIncomingSessionPolicy(string sessionId, AccessPolicy newPolicy)
+    {
+        var ok = _pairing.UpdateIncomingSessionPolicy(sessionId, newPolicy);
+        if (ok) StateChanged?.Invoke(this, EventArgs.Empty);
+        return ok;
+    }
 
     public void DisconnectSession(string sessionId)
     {

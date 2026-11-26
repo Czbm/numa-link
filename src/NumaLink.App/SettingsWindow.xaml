@@ -277,6 +277,15 @@
                                     <TextBlock x:Name="AboutTechText"
                                                FontSize="12" Margin="0,3,0,0"
                                                Foreground="{DynamicResource LinkTextSecondaryBrush}" />
+                                    <TextBlock FontSize="12" Margin="0,3,0,0"
+                                               Foreground="{DynamicResource LinkTextSecondaryBrush}">
+                                        <Run x:Name="CreatedByRun" Text="Creado por " />
+                                        <Hyperlink NavigateUri="https://github.com/Czbm"
+                                                   Foreground="{DynamicResource LinkPrimaryBrush}"
+                                                   RequestNavigate="AuthorLink_RequestNavigate">
+                                            <Run Text="Czbm" FontWeight="SemiBold" />
+                                        </Hyperlink>
+                                    </TextBlock>
                                 </StackPanel>
                                 <Button x:Name="CheckUpdatesButton" Grid.Column="1"
                                         Content="Buscar actualizaciones"

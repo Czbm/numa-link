@@ -21,9 +21,11 @@ public partial class TrayHubWindow : FluentWindow
     private readonly VirtualDriveManager _driveManager;
     private readonly DispatcherTimer _conflictTimer;
     private readonly DispatcherTimer _updateTimer;
+    private readonly DispatcherTimer _statusDismissTimer;
+    private int _statusSecondsRemaining;
     private Forms.NotifyIcon? _trayIcon;
     private bool _isExiting;
-    private bool _qsShowingMounted;
+    private int _qsActiveTab; // 0 = Nearby, 1 = Mounted, 2 = Sharing
     private string? _pendingUpdateUrl;
     private string? _pendingDirectExeUrl;
     private string? _notifiedUpdateVersion;
@@ -48,6 +50,16 @@ public partial class TrayHubWindow : FluentWindow
         public string AccessSummary => Info.AccessSummary;
     }
 
+    private sealed record SharingRow(
+        LanSession Session,
+        string Subtitle,
+        string PrivilegesLabel,
+        string CutLabel,
+        string RevokeLabel)
+    {
+        public string DeviceName => Session.Peer.DisplayName;
+    }
+
     public TrayHubWindow()
     {
         InitializeComponent();
@@ -68,6 +80,9 @@ public partial class TrayHubWindow : FluentWindow
 
         _updateTimer = new DispatcherTimer { Interval = TimeSpan.FromHours(6) };
         _updateTimer.Tick += async (_, _) => await CheckForUpdatesSilentlyAsync();
+
+        _statusDismissTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _statusDismissTimer.Tick += StatusDismissTimer_Tick;
 
         InitializeTray();
 
@@ -113,8 +128,8 @@ public partial class TrayHubWindow : FluentWindow
         switch (_settings.Layout)
         {
             case LinkLayoutStyle.QuickShareTabs:
-                MinWidth = 460;
-                Width = 490;
+                MinWidth = 500;
+                Width = 530;
                 break;
             case LinkLayoutStyle.TwoColumnHorizontal:
                 MinWidth = 740;
@@ -147,6 +162,7 @@ public partial class TrayHubWindow : FluentWindow
         // Layout-specific static headers
         QsSearchingText.Text = _loc.SearchingPeers;
         QsNoDrivesText.Text = _loc.NoDrives;
+        QsNoSharingText.Text = _loc.NoSharing;
 
         TcThisDeviceLabel.Text = _loc.ThisDevice;
         TcNearbyHeader.Text = _loc.NearbyDevices;
@@ -166,25 +182,36 @@ public partial class TrayHubWindow : FluentWindow
 
     private void UpdateQsTabVisuals()
     {
-        QsNearbyPanel.Visibility = !_qsShowingMounted ? Visibility.Visible : Visibility.Collapsed;
-        QsMountedPanel.Visibility = _qsShowingMounted ? Visibility.Visible : Visibility.Collapsed;
+        QsNearbyPanel.Visibility = _qsActiveTab == 0 ? Visibility.Visible : Visibility.Collapsed;
+        QsMountedPanel.Visibility = _qsActiveTab == 1 ? Visibility.Visible : Visibility.Collapsed;
+        QsSharingPanel.Visibility = _qsActiveTab == 2 ? Visibility.Visible : Visibility.Collapsed;
 
-        QsTabNearbyButton.Background = (System.Windows.Media.Brush)FindResource(!_qsShowingMounted ? "LinkPrimaryBrush" : "LinkSurfaceBrush");
-        QsTabNearbyButton.Foreground = (System.Windows.Media.Brush)FindResource(!_qsShowingMounted ? "LinkPrimaryContentBrush" : "LinkTextSecondaryBrush");
+        StyleQsTab(QsTabNearbyButton, _qsActiveTab == 0);
+        StyleQsTab(QsTabMountedButton, _qsActiveTab == 1);
+        StyleQsTab(QsTabSharingButton, _qsActiveTab == 2);
+    }
 
-        QsTabMountedButton.Background = (System.Windows.Media.Brush)FindResource(_qsShowingMounted ? "LinkPrimaryBrush" : "LinkSurfaceBrush");
-        QsTabMountedButton.Foreground = (System.Windows.Media.Brush)FindResource(_qsShowingMounted ? "LinkPrimaryContentBrush" : "LinkTextSecondaryBrush");
+    private void StyleQsTab(System.Windows.Controls.Button btn, bool active)
+    {
+        btn.Background = (System.Windows.Media.Brush)FindResource(active ? "LinkPrimaryBrush" : "LinkSurfaceBrush");
+        btn.Foreground = (System.Windows.Media.Brush)FindResource(active ? "LinkPrimaryContentBrush" : "LinkTextSecondaryBrush");
     }
 
     private void QsTabNearby_Click(object sender, RoutedEventArgs e)
     {
-        _qsShowingMounted = false;
+        _qsActiveTab = 0;
         UpdateQsTabVisuals();
     }
 
     private void QsTabMounted_Click(object sender, RoutedEventArgs e)
     {
-        _qsShowingMounted = true;
+        _qsActiveTab = 1;
+        UpdateQsTabVisuals();
+    }
+
+    private void QsTabSharing_Click(object sender, RoutedEventArgs e)
+    {
+        _qsActiveTab = 2;
         UpdateQsTabVisuals();
     }
 
@@ -372,6 +399,7 @@ public partial class TrayHubWindow : FluentWindow
     {
         _conflictTimer.Stop();
         _updateTimer.Stop();
+        _statusDismissTimer.Stop();
         _driveManager.Dispose();
         _lan.Dispose();
         if (_trayIcon is not null)
@@ -416,13 +444,25 @@ public partial class TrayHubWindow : FluentWindow
             .Select(p => new PeerRow(p, _loc.Connect))
             .ToList();
 
+        var incoming = _lan.IncomingSessions
+            .Select(s => new SharingRow(
+                s,
+                $"{s.Peer.HostAddress} · {FormatPolicySummary(s.Policy)}",
+                _loc.EditPrivileges,
+                _loc.CutConnection,
+                _loc.RevokeAccess))
+            .ToList();
+
         // Quick Share tabs
         QsTabNearbyButton.Content = $"{_loc.TabNearby} ({peers.Count})";
         QsTabMountedButton.Content = $"{_loc.TabMounted} ({drives.Count})";
+        QsTabSharingButton.Content = $"{_loc.TabSharing} ({incoming.Count})";
         QsPeersList.ItemsSource = peers;
         QsNoPeersState.Visibility = peers.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         QsDrivesList.ItemsSource = drives;
         QsNoDrivesState.Visibility = drives.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        QsSharingList.ItemsSource = incoming;
+        QsNoSharingState.Visibility = incoming.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
         // Two-Column layout
         TcPeersList.ItemsSource = peers;
@@ -437,14 +477,45 @@ public partial class TrayHubWindow : FluentWindow
         BentoNoPeersText.Visibility = peers.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void ShowStatus(string message)
+    private void ShowStatus(string message, bool autoDismiss = true)
     {
+        _statusDismissTimer.Stop();
         StatusBannerText.Text = message;
         StatusBanner.Visibility = Visibility.Visible;
+
+        if (autoDismiss)
+        {
+            _statusSecondsRemaining = 5;
+            StatusCountdownText.Text = $"{_statusSecondsRemaining}s";
+            StatusCountdownText.Visibility = Visibility.Visible;
+            _statusDismissTimer.Start();
+        }
+        else
+        {
+            StatusCountdownText.Visibility = Visibility.Collapsed;
+        }
     }
 
-    private void DismissStatus_Click(object sender, RoutedEventArgs e) =>
+    private void StatusDismissTimer_Tick(object? sender, EventArgs e)
+    {
+        _statusSecondsRemaining--;
+        if (_statusSecondsRemaining <= 0)
+        {
+            _statusDismissTimer.Stop();
+            StatusBanner.Visibility = Visibility.Collapsed;
+            StatusCountdownText.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        StatusCountdownText.Text = $"{_statusSecondsRemaining}s";
+    }
+
+    private void DismissStatus_Click(object sender, RoutedEventArgs e)
+    {
+        _statusDismissTimer.Stop();
         StatusBanner.Visibility = Visibility.Collapsed;
+        StatusCountdownText.Visibility = Visibility.Collapsed;
+    }
 
     private void CloseNumaFiles_Click(object sender, RoutedEventArgs e)
     {
@@ -528,7 +599,7 @@ public partial class TrayHubWindow : FluentWindow
         var code = LanPairingService.GenerateVerificationCode();
         ShowStatus(_settings.Language == LinkLanguage.En
             ? $"Connecting to {peer.DisplayName} · Code {code}..."
-            : $"Conectando a {peer.DisplayName} · Código {code}...");
+            : $"Conectando a {peer.DisplayName} · Código {code}...", autoDismiss: false);
 
         try
         {
@@ -544,7 +615,7 @@ public partial class TrayHubWindow : FluentWindow
 
             var mounted = _driveManager.Mount(endpoint);
             ShowStatus($"{peer.DisplayName} → {mounted.MountPoint}");
-            _qsShowingMounted = true;
+            _qsActiveTab = 1;
             UpdateQsTabVisuals();
             RefreshUi();
 
@@ -584,5 +655,62 @@ public partial class TrayHubWindow : FluentWindow
             ShowStatus(_settings.Language == LinkLanguage.En ? "Drive unmounted." : "Unidad desmontada.");
             RefreshUi();
         }
+    }
+
+    private string FormatPolicySummary(AccessPolicy p)
+    {
+        var en = _settings.Language == LinkLanguage.En;
+        var level = p.Level switch
+        {
+            AccessLevel.Full => en ? "Full" : "Completo",
+            AccessLevel.Media => en ? "Media" : "Multimedia",
+            AccessLevel.Custom => en ? "Custom" : "Personalizado",
+            _ => p.Level.ToString()
+        };
+        var perm = p.Permission == AccessPermission.ReadWrite
+            ? (en ? "Read/Write" : "Lectura/Escritura")
+            : (en ? "Read-only" : "Solo lectura");
+        return $"{level} · {perm}";
+    }
+
+    private void EditIncomingPrivileges_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.Button { Tag: LanSession session })
+            return;
+
+        var dlg = new LinkRequestWindow(session) { Owner = this };
+        if (dlg.ShowDialog() == true && dlg.Decision.Accepted && dlg.Decision.Policy is not null)
+        {
+            _lan.UpdateIncomingSessionPolicy(session.SessionId, dlg.Decision.Policy);
+            ShowStatus(_settings.Language == LinkLanguage.En
+                ? $"Privileges updated for {session.Peer.DisplayName}."
+                : $"Privilegios actualizados para {session.Peer.DisplayName}.");
+            RefreshUi();
+        }
+    }
+
+    private void CutIncomingSession_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.Button { Tag: LanSession session })
+            return;
+
+        _lan.DisconnectSession(session.SessionId);
+        ShowStatus(_settings.Language == LinkLanguage.En
+            ? $"Disconnected {session.Peer.DisplayName}."
+            : $"Conexión cortada con {session.Peer.DisplayName}.");
+        RefreshUi();
+    }
+
+    private void RevokeIncomingAccess_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.Button { Tag: LanSession session })
+            return;
+
+        _lan.DisconnectSession(session.SessionId);
+        _lan.RevokeTrustedDevice(session.Peer.DeviceId);
+        ShowStatus(_settings.Language == LinkLanguage.En
+            ? $"Access revoked for {session.Peer.DisplayName}."
+            : $"Acceso revocado para {session.Peer.DisplayName}.");
+        RefreshUi();
     }
 }

@@ -21,6 +21,29 @@ public partial class LinkRequestWindow : FluentWindow
         CustomFoldersList.ItemsSource = _customFolders;
     }
 
+    public LinkRequestWindow(LanSession existingSession)
+    {
+        InitializeComponent();
+        Title = "Editar privilegios — Numa Link";
+        DeviceNameText.Text = existingSession.Peer.DisplayName;
+        DeviceSubtitleText.Text = $"Desde {existingSession.Peer.HostAddress} · Conectado actualmente";
+        CodeText.Text = "ACTIVO";
+        CodeText.FontSize = 14;
+        CustomFoldersList.ItemsSource = _customFolders;
+
+        foreach (var root in existingSession.Policy.CustomRoots)
+            _customFolders.Add(root);
+
+        AccessLevelCombo.SelectedIndex = existingSession.Policy.Level switch
+        {
+            AccessLevel.Full => 1,
+            AccessLevel.Custom => 2,
+            _ => 0
+        };
+        PermissionCombo.SelectedIndex = existingSession.Policy.Permission == AccessPermission.ReadWrite ? 1 : 0;
+        RememberCheck.IsChecked = existingSession.Peer.IsTrusted || existingSession.Policy.RememberDevice;
+    }
+
     public PairDecision Decision { get; private set; } = PairDecision.Reject("Cancelada.");
 
     private void AccessLevelCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)

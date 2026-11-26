@@ -4,7 +4,7 @@
 [Setup]
 AppId={{8F6E2A14-4C9B-4E91-9A2D-7B41E5C01F9A}
 AppName=Numa Link
-AppVersion=1.0.6
+AppVersion=1.0.7
 AppPublisher=Numa
 DefaultDirName={autopf}\Numa Link
 DefaultGroupName=Numa Link

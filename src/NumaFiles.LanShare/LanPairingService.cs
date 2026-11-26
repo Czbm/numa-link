@@ -55,8 +55,47 @@ public sealed class LanPairingService : IDisposable
             .ToList();
     }
 
+    public IReadOnlyList<LanSession> GetIncomingSessions() =>
+        _incomingSessions.Values
+            .Select(v => v.Session)
+            .OrderByDescending(s => s.ConnectedAtUtc)
+            .ToList();
+
     public IReadOnlyList<ConnectedRemoteEndpoint> GetOutgoingConnections() =>
         _outgoingConnections.Values.ToList();
+
+    public bool UpdateIncomingSessionPolicy(string sessionId, AccessPolicy newPolicy)
+    {
+        if (!_incomingSessions.TryGetValue(sessionId, out var active))
+            return false;
+
+        var updatedPeer = active.Session.Peer with { IsTrusted = newPolicy.RememberDevice };
+        var updatedSession = active.Session with
+        {
+            Peer = updatedPeer,
+            Policy = newPolicy
+        };
+
+        _incomingSessions[sessionId] = active with { Session = updatedSession };
+
+        if (newPolicy.RememberDevice)
+        {
+            _identity.SaveTrusted(new TrustedDeviceRecord
+            {
+                DeviceId = updatedPeer.DeviceId,
+                DisplayName = updatedPeer.DisplayName,
+                Policy = newPolicy,
+                AddedAtUtc = DateTime.UtcNow
+            });
+        }
+        else
+        {
+            _identity.RevokeTrusted(updatedPeer.DeviceId);
+        }
+
+        SessionsChanged?.Invoke(this, EventArgs.Empty);
+        return true;
+    }
 
     public void Start()
     {
